@@ -20,7 +20,20 @@ const first_primes_list: [u32; 110] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
                                     571, 577, 587, 593, 599, 601];
 
 
-pub fn get_rand_nbit(num_of_bits: u32) -> BigUint {
+fn initial_div_test(candidate: BigUint, num_of_bits: u32) -> BigUint {
+    loop {
+        for prime in first_primes_list {
+            if (candidate % prime).if_zero() && prime.pow(2_u32) <= candidate {
+                break;
+            } else {
+                candidate
+            }
+        }
+        candidate = get_rand_nbit(&num_of_bits);
+    }
+}
+
+pub fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
     let mut rng = rand::thread_rng();
     let mut rand_bits: Vec<u8> = Vec::new();
     
@@ -41,6 +54,6 @@ mod tests {
     #[test]
     fn show_num() {
         let num_of_bits: u32 = 8;
-        println!("{:?}", get_rand_nbit(num_of_bits));
+        println!("{:?}", get_rand_nbit(&num_of_bits));
     }
 }
