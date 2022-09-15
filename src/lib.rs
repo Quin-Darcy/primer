@@ -2,7 +2,7 @@ use rand::Rng;
 use num_bigint::{BigUint};
 
 
-fn get_rand_nbit(num_of_bits: u32) -> BigUint {
+pub fn get_rand_nbit(num_of_bits: u32) -> BigUint {
     let mut rng = rand::thread_rng();
     let mut rand_bits: Vec<u8> = Vec::new();
     
