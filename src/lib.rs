@@ -3,7 +3,7 @@ use num_bigint::{BigUint};
 
 
 
-const first_primes_list: [u32; 110] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
+const FIRST_PRIMES: [u32; 110] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
                                     31, 37, 41, 43, 47, 53, 59, 61, 67,
                                     71, 73, 79, 83, 89, 97, 101, 103,
                                     107, 109, 113, 127, 131, 137, 139,
@@ -20,19 +20,6 @@ const first_primes_list: [u32; 110] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
                                     571, 577, 587, 593, 599, 601];
 
 
-fn initial_div_test(candidate: BigUint, num_of_bits: u32) -> BigUint {
-    loop {
-        for prime in first_primes_list {
-            if (candidate % prime).if_zero() && prime.pow(2_u32) <= candidate {
-                break;
-            } else {
-                candidate
-            }
-        }
-        candidate = get_rand_nbit(&num_of_bits);
-    }
-}
-
 pub fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
     let mut rng = rand::thread_rng();
     let mut rand_bits: Vec<u8> = Vec::new();
@@ -46,7 +33,55 @@ pub fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
     BigUint::from_radix_be(&rand_bits[..], 2).unwrap()
 }
 
+fn initial_div_test(candidate: BigUint, num_of_bits: u32) -> BigUint {
+    let mut non_divisors: u32 = 0;
+    let mut new_candidate: BigUint = candidate;
+    loop {
+        for p in FIRST_PRIMES {
+            if (new_candidate.clone() % p).is_zero() && new_candidate > BigUint::from(p) {
+                new_candidate = get_rand_nbit(num_of_bits);
+                non_divisors = 0;
+                break;
+            } else {
+                non_divisors += 1;
+            }
+        }
+        if non_divisors as usize == FIRST_PRIMES.len() {
+            return new_candidate;
+        }
+    }
+}
 
+fn get_two_pow(candidate: BigUint) -> u32 {
+    let mut e: u32 = 0;
+    let shift_size: usize = 1;
+    let mut n: BigUint candidate.clone()-1_u32;
+
+    while (&n % 2_u32).is_zero() {
+        n >>= shift_size;
+        e += 1;
+    }
+    return e;
+}
+/*
+fn miller_rabin(candidate: BigUint) -> bool {
+    let mut rng = rand::thread_rng();
+    let two_pow: u32 = get_two_pow(candidate.clone());
+    let rmdr: BigUint = candidate.clone() / (2_u32).pow(two_pow);
+    let iters: usize = 20;
+
+    for _ in 0..iters {
+        let base: BigUint = rng.gen_biguint_range(&BigUint::from(2_u32), &(candidate.clone()-1_u32));
+    }
+}
+
+pub fn get_large_prime(num_of_bits: u32) -> BigUint {
+    let candidate: BigUint;
+    loop {
+        if 
+    }
+}
+*/
 #[cfg(test)]
 mod tests {
     use super::*;
