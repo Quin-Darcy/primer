@@ -19,7 +19,10 @@ const FIRST_PRIMES: [u32; 110] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
                                     521, 523, 541, 547, 557, 563, 569,  
                                     571, 577, 587, 593, 599, 601];
 
-
+// This function uses its argument to generate a num_of_bits-bit number.
+// The generation includes randomly choosing the bit values. Note that
+// the first and last bit are always one to assure the number has exactly
+// num_of_bits many bits and is odd.
 pub fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
     let mut rng = rand::thread_rng();
     let mut rand_bits: Vec<u8> = Vec::new();
@@ -33,6 +36,10 @@ pub fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
     BigUint::from_radix_be(&rand_bits[..], 2).unwrap()
 }
 
+// This function receives a prime candidate and if the cadidate is divisble
+// by any number in FIRST_PRIMES, then a new candidate is generated. This 
+// function will not return until it has a candidate which passes this 
+// divibility check.
 fn initial_div_test(candidate: BigUint, num_of_bits: u32) -> BigUint {
     let mut non_divisors: u32 = 0;
     let mut new_candidate: BigUint = candidate;
@@ -40,7 +47,7 @@ fn initial_div_test(candidate: BigUint, num_of_bits: u32) -> BigUint {
     loop {
         for p in FIRST_PRIMES {
             if (new_candidate.clone() % p).is_zero() && new_candidate > BigUint::from(p) {
-                new_candidate = get_rand_nbit(num_of_bits);
+                new_candidate = get_rand_nbit(&num_of_bits);
                 non_divisors = 0;
                 break;
             } else {
@@ -53,10 +60,12 @@ fn initial_div_test(candidate: BigUint, num_of_bits: u32) -> BigUint {
     }
 }
 
+// This function calculates the largest power of two that divides the
+// argument and returns the exponent of the exponent. 
 fn get_two_pow(candidate: BigUint) -> u32 {
     let mut e: u32 = 0;
     let shift_size: usize = 1;
-    let mut n: BigUint candidate.clone()-1_u32;
+    let mut n: BigUint = candidate.clone()-1_u32;
 
     while (&n % 2_u32).is_zero() {
         n >>= shift_size;
