@@ -1,6 +1,6 @@
 use rand::Rng;
-use num_bigint::{BigUint};
-
+use num_bigint::{BigUint, RandBigInt};
+use num_traits::identities::Zero;
 
 
 const FIRST_PRIMES: [u32; 110] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
@@ -36,6 +36,7 @@ pub fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
 fn initial_div_test(candidate: BigUint, num_of_bits: u32) -> BigUint {
     let mut non_divisors: u32 = 0;
     let mut new_candidate: BigUint = candidate;
+
     loop {
         for p in FIRST_PRIMES {
             if (new_candidate.clone() % p).is_zero() && new_candidate > BigUint::from(p) {
