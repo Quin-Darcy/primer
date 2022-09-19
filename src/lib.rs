@@ -1,6 +1,9 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
 use rand::Rng;
 use num_bigint::{BigUint, RandBigInt};
-use num_traits::identities::Zero;
+use num_traits::{One};
+use num_traits::identities::{Zero};
 
 
 const FIRST_PRIMES: [u32; 110] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
@@ -37,27 +40,20 @@ pub fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
 }
 
 // This function receives a prime candidate and if the cadidate is divisble
-// by any number in FIRST_PRIMES, then a new candidate is generated. This 
-// function will not return until it has a candidate which passes this 
-// divibility check.
-fn initial_div_test(candidate: BigUint, num_of_bits: u32) -> BigUint {
-    let mut non_divisors: u32 = 0;
-    let mut new_candidate: BigUint = candidate;
-
-    loop {
-        for p in FIRST_PRIMES {
-            if (new_candidate.clone() % p).is_zero() && new_candidate > BigUint::from(p) {
-                new_candidate = get_rand_nbit(&num_of_bits);
-                non_divisors = 0;
-                break;
+// by any number in FIRST_PRIMES, then false is returned. The function returns
+// true if it is equal to a prime in the list or if it is not divisible by any 
+// of the primes in the list. 
+fn initial_div_test(candidate: BigUint) -> bool {
+    for p in FIRST_PRIMES {
+        if (candidate.clone() % p).is_zero() && candidate >= BigUint::from(p) {
+            if candidate == BigUint::from(p) {
+                return true;
             } else {
-                non_divisors += 1;
+                return false;
             }
-        }
-        if non_divisors as usize == FIRST_PRIMES.len() {
-            return new_candidate;
-        }
+        }  
     }
+    return true;
 }
 
 // This function calculates the largest power of two that divides the
@@ -73,32 +69,73 @@ fn get_two_pow(candidate: BigUint) -> u32 {
     }
     return e;
 }
-/*
+
+// This function implements the Miller-Rabin primality test and returns
+// true is the candidate is likely prime and false if it is composite. 
 fn miller_rabin(candidate: BigUint) -> bool {
+    let iters: usize = 20;
     let mut rng = rand::thread_rng();
+    let one: BigUint = BigUint::one();
+    let neg_one: BigUint = candidate.clone()-1_u32;
     let two_pow: u32 = get_two_pow(candidate.clone());
     let rmdr: BigUint = candidate.clone() / (2_u32).pow(two_pow);
-    let iters: usize = 20;
+    let mut base: BigUint = rng.gen_biguint_range(&BigUint::from(2_u32), &(candidate.clone()-1_u32));
 
+    // First check
+    base = BigUint::modpow(&base, &rmdr.clone(), &candidate.clone());
+    if base == one  || base == neg_one {
+        return true;
+    } 
+    
+    // Remaining checks
     for _ in 0..iters {
-        let base: BigUint = rng.gen_biguint_range(&BigUint::from(2_u32), &(candidate.clone()-1_u32));
+        base = BigUint::modpow(&base, &BigUint::from(2_u32), &candidate.clone());       
+        if base == one {
+            return false;
+        } else if base == neg_one {
+            return true;
+        } 
+    }
+    return false;
+}
+
+// This function returns a num_of_bits-bit prime number. 
+pub fn get_large_prime(num_of_bits: u32) -> BigUint {
+    let mut candidate = get_rand_nbit(&num_of_bits);
+
+    loop {
+        if initial_div_test(candidate.clone()) {
+            if miller_rabin(candidate.clone()) {
+                return candidate;
+            } else {
+                candidate = get_rand_nbit(&num_of_bits);
+            }
+        } else {
+            candidate = get_rand_nbit(&num_of_bits);
+        }
     }
 }
 
-pub fn get_large_prime(num_of_bits: u32) -> BigUint {
-    let candidate: BigUint;
-    loop {
-        if 
-    }
-}
-*/
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn show_num() {
-        let num_of_bits: u32 = 8;
-        println!("{:?}", get_rand_nbit(&num_of_bits));
+    fn initial_div_tests() {
+        assert_eq!(initial_div_test(BigUint::from(53_u32)), true);
+        assert_eq!(initial_div_test(BigUint::from(10000000000_u64)), false);
+    }
+
+    #[test]
+    fn highest_two_pow() {
+        assert_eq!(get_two_pow(BigUint::from(33_u32)), 5_u32);
+        assert_eq!(get_two_pow(BigUint::from(602_u32)), 0);
+    }
+
+    #[test]
+    fn miller_rabin_test() {
+        assert_eq!(miller_rabin(BigUint::from(53_u32)), true);
+        assert_eq!(miller_rabin(BigUint::from(123456789_u64)), false);
+        assert_eq!(miller_rabin(BigUint::from(205403002746320107182300608701_u128)), true);
     }
 }
