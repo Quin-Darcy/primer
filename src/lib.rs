@@ -23,11 +23,31 @@ const FIRST_PRIMES: [u32; 110] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
                                     521, 523, 541, 547, 557, 563, 569,  
                                     571, 577, 587, 593, 599, 601];
 
+pub fn get_max_factor(n: &u128) -> u128 {
+    let mut n: u128 = n.clone();
+    let mut divisor: u128 = 2;
+    let mut factors: Vec<u128> = Vec::new();
+    
+    while n > 1 {
+        while n % divisor == 0 {
+            factors.push(divisor.clone());
+            n = n / divisor;
+        }
+        divisor += 1;
+        if divisor.pow(2_u32) > n {
+            if n > 1 {
+                factors.push(n.clone())
+            }
+        }
+    }
+    return *factors.iter().max().unwrap();
+}
+
 // This function uses its argument to generate a num_of_bits-bit number.
 // The generation includes randomly choosing the bit values. Note that
 // the first and last bit are always one to assure the number has exactly
 // num_of_bits many bits and is odd.
-pub fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
+fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
     let mut rng = rand::thread_rng();
     let mut rand_bits: Vec<u8> = Vec::new();
     
