@@ -102,6 +102,7 @@ fn miller_rabin(candidate: BigUint) -> bool {
 
 // This function returns a num_of_bits-bit prime number. 
 pub fn get_large_prime(num_of_bits: mut u32) -> u128 {
+    let mut num_of_bits = num_of_bits;
     if num_of_bits > 128 {
       num_of_bits = 128_u32;
     }
