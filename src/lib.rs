@@ -1,9 +1,10 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 use rand::Rng;
-use num_bigint::{BigUint, RandBigInt};
 use num_traits::{One};
 use num_traits::identities::{Zero};
+use num_traits::cast::ToPrimitive;
+use num_bigint::{BigUint, RandBigInt};
 
 
 const FIRST_PRIMES: [u32; 110] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
