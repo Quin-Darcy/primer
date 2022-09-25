@@ -64,7 +64,7 @@ fn get_rand_nbit(num_of_bits: &u32) -> BigUint {
 // by any number in FIRST_PRIMES, then false is returned. The function returns
 // true if it is equal to a prime in the list or if it is not divisible by any 
 // of the primes in the list. 
-fn initial_div_test(candidate: BigUint) -> bool {
+pub fn initial_div_test(candidate: BigUint) -> bool {
     for p in FIRST_PRIMES {
         if (candidate.clone() % p).is_zero() && candidate >= BigUint::from(p) {
             if candidate == BigUint::from(p) {
@@ -93,7 +93,7 @@ fn get_two_pow(candidate: BigUint) -> u32 {
 
 // This function implements the Miller-Rabin primality test and returns
 // true is the candidate is likely prime and false if it is composite. 
-fn miller_rabin(candidate: BigUint) -> bool {
+pub fn miller_rabin(candidate: BigUint) -> bool {
     let iters: usize = 20;
     let mut rng = rand::thread_rng();
     let one: BigUint = BigUint::one();
