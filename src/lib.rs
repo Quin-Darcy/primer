@@ -121,20 +121,19 @@ pub fn miller_rabin(candidate: BigUint) -> bool {
 }
 
 // This function returns a num_of_bits-bit prime number. 
-pub fn get_large_prime(num_of_bits: u32) -> BigUint {//u128 {
+pub fn get_large_prime(num_of_bits: u32) -> u128 {
     let mut num_of_bits = num_of_bits;
-    /*
+    
     if num_of_bits > 128 {
       num_of_bits = 128_u32;
     }
-    */
+    
     let mut candidate = get_rand_nbit(&num_of_bits);
 
     loop {
         if initial_div_test(candidate.clone()) {
             if miller_rabin(candidate.clone()) {
-                //return candidate.to_u128().unwrap();
-                return candidate;
+                return candidate.to_u128().unwrap();
             } else {
                 candidate = get_rand_nbit(&num_of_bits);
             }
